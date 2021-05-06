@@ -204,6 +204,6 @@ client.on("messageDelete", (message) => {
 
 
 
-client.login('ODAwODk3MTc4NzY3NDU4MzQ1.YAYznw.grS7TdRE6OZKDmE58_jx_UIl25c'); 
+client.login('lol'); 
 
 
