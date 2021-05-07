@@ -1,158 +1,46 @@
-const Discord = require('discord.js');
-const client = new Discord.Client();
-
-const prefix = '-';
-
-const fs = require('fs');
-
-client.commands = new Discord.Collection();
-
-const Client = new Discord.Client({ partials: ["MESSAGE", "CHANNEL", "REACTION" ]});
-
-
-
-const commandFiles = fs.readdirSync('./commands/').filter(file => file.endsWith('.js'));
+// Here we just import everything the bot needs
+const { Collection, MessageEmbed, Client, Message } = require("discord.js");
+const { prefix, token, reaction_roles: { colo_id, factions_id, hbc_id } } = require('./config.json')
+const { readdirSync } = require('fs');
+const client = new Client({partials: ['MESSAGE', 'REACTION']});
+client.commands = new Collection();
+const Pings = new Collection();
+const commandFiles = readdirSync('./commands/').filter(file => file.endsWith('.js'));
+// Register the commands
 for(const file of commandFiles){
 	const command = require(`./commands/${file}`);
-
 	client.commands.set(command.name, command);
-
-
 }
-
+// Log that the bot is online
 client.once('ready', () => {
 	client.user.setActivity(`V3.5`, {type: 'WATCHING'});
 	console.log('NNA manager is online');
-	
 })
 
-
+// Check if a message is a command, or alias of one, and then check if it has a blacklisted word
 client.on('message', message => {
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
-
 	const args = message.content.slice(prefix.length).trim().split(' ');
-const command = args.shift().toLowerCase();
-
-	if(command === 'test'){
-		client.commands.get('test').execute(message, args, Discord);
+	let commandName = args.shift().toLowerCase();
+	let command = client.commands.get(commandName)
+	if(!command) {
+		command = client.commands.find(cmd => cmd?.aliases.includes(commandName))
+		if(!command) return
 	}
-	if(command === 'rules'){
-		client.commands.get('rules').execute(message, args, Discord);
-	}
-	else if(command === 'server'){
-			client.commands.get('server').execute(message, args);
-	}
-	else if(command === 'prune'){
-		client.commands.get('prune').execute(message, args);
-	}
-	else if(command === 'clear'){
-		client.commands.get('clear').execute(message, args);
-	}
-	else if(command === 'avatar'){
-		client.commands.get('avatar').execute(message, args);
-	}
-	else if(command === 'avatarlink'){
-		client.commands.get('avatarlink').execute(message, args);
-	}
-	else if(command === 'hierachy'){
-		client.commands.get('hierachy').execute(message, args, Discord);
-	}
-	else if(command === 'note'){
-		client.commands.get('note').execute(message, args, Discord, client);
-	}
-	else if(command === 'group'){
-		client.commands.get('group').execute(message, args, Discord);
-	}
-	else if(command === 'time'){
-		client.commands.get('time').execute(message, args, Discord);
-	}
-	else if(command === 'kick'){
-		client.commands.get('kick').execute(message, args);
-	}
-	else if(command === 'ban'){
-		client.commands.get('ban').execute(message, args);	
-	}
-	else if(command === 'payraise'){
-		client.commands.get('payraise').execute(message, args);	
-	}
-	else if(command === 'mute'){
-		client.commands.get('mute').execute(message, args);	
-	}
-	else if(command === 'unmute'){
-		client.commands.get('unmute').execute(message, args);	
-	}
-	if (command === 'reactionrolehbc') {
-        client.commands.get('reactionrolehbc').execute(message, args, Discord, client);
-    } 
-	if (command === 'rank') {
-        client.commands.get('rank').execute(message, args, Discord, client);
-    } 
-	if (command === 'reactionrolecolo') {
-        client.commands.get('reactionrolecolo').execute(message, args, Discord, client);
-    } 
-	if (command === 'reactionrolefactions') {
-        client.commands.get('reactionrolefactions').execute(message, args, Discord, client);
-    } 
-	if (command === 'help') {
-        client.commands.get('help').execute(message, args, Discord, client);
-    }
-	else if(command === 'ae.rank'){
-		client.commands.get('ae.rank').execute(message, args);	
-	}
-	else if(command === 'ae.remove'){
-		client.commands.get('ae.remove').execute(message, args);	
-	}
-	else if(command === 'e.rank'){
-		client.commands.get('e.rank').execute(message, args);	
-	}
-	else if(command === 'e.remove'){
-		client.commands.get('e.remove').execute(message, args);	
-	}
-	else if(command === 'ar.rank'){
-		client.commands.get('ar.rank').execute(message, args);	
-	}
-	else if(command === 'ar.remove'){
-		client.commands.get('ar.remove').execute(message, args);	
-	}
-	else if(command === 'r.rank'){
-		client.commands.get('r.rank').execute(message, args);	
-	}
-	else if(command === 'r.remove'){
-		client.commands.get('r.remove').execute(message, args);	
-	}
-	else if(command === 'sr.rank'){
-		client.commands.get('sr.rank').execute(message, args);	
-	}
-	else if(command === 'sr.remove'){
-		client.commands.get('sr.remove').execute(message, args);	
-	}
-	else if(command === 'au.rank'){
-		client.commands.get('au.rank').execute(message, args);	
-	}
-	else if(command === 'au.remove'){
-		client.commands.get('au.remove').execute(message, args);	
-	}
-	else if(command === 'a.rank'){
-		client.commands.get('a.rank').execute(message, args);	
-	}
-	else if(command === 'a.remove'){
-		client.commands.get('a.remove').execute(message, args);	
-	}
-	else if(command === 'sa.rank'){
-		client.commands.get('sa.rank').execute(message, args);	
-	}
-	else if(command === 'sa.remove'){
-		client.commands.get('sa.remove').execute(message, args);	
-	}
-	else if(command === 'retire'){
-		client.commands.get('retire').execute(message, args);	
-	}	
-	
+	command.execute(client, message, args)
+	checkBlacklisted(message)
+	// Check pings is edited out since the code never does anything
+	//checkPings(message)
 });
-client.on('message', async message => {
+
+/**
+ * @param {Message} message
+ */
+// The blacklisted word check function
+async function checkBlacklisted (message) {
 	let blacklisted = ['birdz','cry about it','cry bout it','nig', 'retarded', 'fuck', 'shit', 'gay'];
 	let foundInText = false;
-	for (var i in blacklisted){
+	for (var i in blacklisted) {
 		if (message.content.toLowerCase().includes(blacklisted[i].toLowerCase())) foundInText = true;	
 	}
 	if (foundInText) {
@@ -161,49 +49,110 @@ client.on('message', async message => {
 		.then(msg => {
 			msg.delete({ timeout: 3000 });
 		})
-.catch();
+		.catch();
 	}
+}
+
+/**
+ * @param {Message} message
+ */
+// The pings function
+async function checkPings (message) {
+	if (!message.mentions.members.first()) return;
+	if (message.mentions.members.first().id === message.author.id) return;
+	const time = 5000;
+	Pings.set(`pinger:${message.author.id}`, Date.now() + time);
+	setTimeout(() => {
+		Pings.delete(`pinger:${message.mentions.members.first().id}`);
+	}, time);
+}
+
+// Logs ghost pings
+client.on("messageDelete", (message) => {
+	if(message.partial) try {
+		message.fetch()
+	} catch (error) {
+		return	
+	}
+  	if (!message.mentions.members.first()) return;
+	let embed = new MessageEmbed()
+		.setTitle("Ghost Ping logged")
+		.addField("author", message.author)
+		.addField("message content:", message.content)
+		.setColor('#f5b318')
+		.setTimestamp()
+		.setThumbnail(message.guild.iconURL())
+	message.channel.send(embed);
+});
+
+// Checks for reaction role additions
+client.on('messageReactionAdd', async (messageReaction, user) => {
+	if(![`${colo_id}`, `${factions_id}`, `${hbc_id}`].includes(messageReaction.message.id)) return
+	if(user.bot) return
+	if(messageReaction.partial) await messageReaction.fetch()
+	if(user.partial) await user.fetch()
+	let member = messageReaction.message.guild.member(user)
+	let roles
+	messageReaction.users.fetch()
+	if(messageReaction.message.id === colo_id) roles = {
+		'🧍': 'Colonist',
+		'🔫': 'Hudson Bay Company'
+	}
+	if(messageReaction.message.id === factions_id) roles = {
+		'🟩': 'IEF',
+		'⭐': 'North Union',
+		'👑': 'LCM',
+		'🐺': 'TWM'
+	}
+	if(messageReaction.message.id === hbc_id) roles = {
+		'⬜': 'Hudsons Highlanders',
+		'💂': 'Grenadier Guardsmen',
+		'🕵': 'MFP',
+		'🥁': 'DFC',
+		'🟪': '6th Company',
+		'🟥': '5th Company',
+		'🟫': '4th Company',
+		'🟦': '3rd Company',
+		'🟩': '2nd Company',
+		'🟨': '1st Company'
+	}
+	let role = messageReaction.message.guild.roles.cache.find(role => role.name === roles[messageReaction.emoji.name])
+	if(!role) return console.log(`Role ${roles[messageReaction.emoji.name]} does not exist!`)
+	member.roles.add(role)
+	// Check if they were reacted to something else, and if yes remove the old reaction
+	messageReaction.message.reactions.cache.each(messagereaction => {
+		if(messageReaction.users.cache.has(user.id) && messagereaction.emoji.name != messageReaction.emoji.name) messagereaction.users.remove(user.id)
+	})
 })
 
+client.on('messageReactionRemove', async (messageReaction, user) => {
+	if(messageReaction.partial) await messageReaction.fetch()
+	if(user.partial) await user.fetch()
+	if(![`${colo_id}`, `${factions_id}`, `${hbc_id}`].includes(messageReaction.message.id)) return
+	if(user.bot) return
+	let member = messageReaction.message.guild.member(user)
+	let roles = {
+		'🧍': 'Colonist',
+		'🔫': 'Hudson Bay Company',
+		'🟩': 'IEF',
+		'⭐': 'North Union',
+		'👑': 'LCM',
+		'🐺': 'TWM',
+		'⬜': 'Hudsons Highlanders',
+		'💂': 'Grenadier Guardsmen',
+		'🕵': 'MFP',
+		'🥁': 'DFC',
+		'🟪': '6th Company',
+		'🟥': '5th Company',
+		'🟫': '4th Company',
+		'🟦': '3rd Company',
+		'🟩': '2nd Company',
+		'🟨': '1st Company'
+	}
+	let role = messageReaction.message.guild.roles.cache.find(role => role.name === roles[messageReaction.emoji.name])
+	if(!role) return console.log(`Role ${roles[messageReaction.emoji.name]} does not exist!`)
+	member.roles.remove(role)
+})
 
-const { Collection, MessageEmbed } = require("discord.js");
-const Pings = new Collection();
-
-client.on("message", async (message) => {
-  if (!message.mentions.members.first()) return;
-  if (message.mentions.members.first().id === message.author.id) return;
-  const time = 5000;
-  Pings.set(`pinger:${message.author.id}`, Date.now() + time);
-  setTimeout(() => {
-    Pings.delete(`pinger:${message.mentions.members.first().id}`);
-  }, time);
-});
-
-
-client.on("messageDelete", (message) => {
-  if (!message.mentions.members.first()) return;{
-    message.channel.send(
-      new MessageEmbed()
-        .setTitle("Ghost Ping logged")
-        .addField("author", message.author)
-        .addField("message content:", message.content)
-        .setColor('#f5b318')
-        .setTimestamp()
-		.setThumbnail(message.guild.iconURL())
-    );
-  }
-});
-
-
-
-
-
-
-
-
-
-
-
-client.login('lol'); 
-
-
+// Login
+client.login(token);

@@ -1,5 +1,9 @@
 {
 	"prefix": "-",
-	"token": "your-token-goes-here"
+	"token": "token here",
+	"reaction_roles": {
+		"colo_id": "colo message reaction id",
+		"factions_id": "faction message reaction id",
+		"hbc_id": "hbc message reaction id"
+	}
 }
-

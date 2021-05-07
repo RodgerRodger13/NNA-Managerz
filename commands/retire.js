@@ -1,7 +1,19 @@
+const { Client, Message } = require('discord.js')
+
 module.exports = {
     name: 'retire',
-    description: "retire",
-    execute(message, args) {
+    description: "Retires a user",
+    aliases: [],
+    usage: '@user',
+    category: 'Admin',
+    /**
+     * 
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {[]} args 
+     * @returns 
+     */
+    execute(client, message, args) {
         const target = message.mentions.users.first();
         if (target) {
             if(!message.member.roles.cache.has('803756446952587287')) return message.channel.send('**You are not authorized to use this command**');

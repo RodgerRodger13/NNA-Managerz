@@ -1,9 +1,19 @@
-const { MessageEmbed } = require('discord.js')
+const { Client, Message, MessageEmbed } = require('discord.js')
 
 module.exports = {
     name: 'rank',
     description: "rank",
-    async execute(message, args, client) {
+    usage: '@user',
+    category: 'Admin',
+    aliases: [],
+    /**
+     * 
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {[]} args 
+     * @returns 
+     */
+    async execute(client, message, args) {
         if(!message.member.roles.cache.has('803756446952587287')) return message.channel.send('**You are not authorized to use this command**');
         const target = message.mentions.members.first();
         if(!target) return message.channel.send({embed: {
@@ -20,6 +30,31 @@ module.exports = {
             "7️⃣": "Author",
             "8️⃣": "Senior Author"
         }
+        const shorthandRoles = {
+            "ae": "Apprentice Editor",
+            "e": "Editor",
+            "ar": "Apprentice Reporter",
+            "r": "Reporter",
+            "sr": "Senior Reporter",
+            "aa": "Apprentice Author",
+            "a": "Author",
+            "sa": "Senior Author"
+        }
+        if(args[0] && Object.keys(shorthandRoles).includes(args[0])) {
+            let role = message.guild.roles.cache.find(role => role.name === reactionRoles[args[0]]);
+            if(!target.roles.cache.has(role.id)) {
+                target.roles.add(role)
+                let msg = await message.channel.send(`**role *${reactionRoles[response]}* added to** ${target.toString()}`);
+                messageEmbed.delete({timeout: 5000})
+                msg.delete({timeout: 5000})
+            } else {
+                target.roles.remove(role)
+                let msg = await message.channel.send(`**role *${reactionRoles[response]}* removed from** ${target.toString()}`);
+                messageEmbed.delete({ timeout: 5000 })
+                msg.delete({timeout: 5000})
+            }
+            return
+        }
         let embed = new MessageEmbed()        
             .setColor('#f5b318')
             .setTitle('React to rank a Writer')
@@ -29,9 +64,7 @@ module.exports = {
         Object.keys(reactionRoles).forEach(emoji => {
             try {
                 messageEmbed.react(emoji)
-            } catch (err) {
-            
-            }
+            } catch (err) {}
         })
         const filter = (reaction, user) => Object.keys(reactionRoles).includes(reaction.emoji.name) && user.id === message.author.id
         messageEmbed.awaitReactions(filter, { time: 30000, max: 1 })
@@ -43,11 +76,12 @@ module.exports = {
                 target.roles.add(role)
                 let msg = await message.channel.send(`**role *${reactionRoles[response]}* added to** ${target.toString()}`);
                 messageEmbed.delete({timeout: 5000})
+                msg.delete({timeout: 5000})
             } else {
                 target.roles.remove(role)
                 let msg = await message.channel.send(`**role *${reactionRoles[response]}* removed from** ${target.toString()}`);
                 messageEmbed.delete({ timeout: 5000 })
-                
+                msg.delete({timeout: 5000})
             }
         })
     }

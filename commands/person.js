@@ -1,29 +1,29 @@
-
-const Discord = require('discord.js');
-
+const { Client, Message, MessageEmbed } = require('discord.js')
 
 module.exports = {
     name: 'person',
     description: 'warn a member',
-    async execute(message, args , Discord){
-        edited = message.content.slice(5);
-
-        const guildID = message.guild.Discord
+    aliases: [],
+    /**
+     * 
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {[]} args 
+     * @returns 
+     */
+    async execute(client, message, args) {
         const UserId = message.member.id
-        const Reason = args.splice(1).join(' ')
+        const Reason = args[1].join(' ')
         let User = message.mentions.users.first()
         const author = message.author
-
-
         if(message.member.hasPermission('MANAGE_MESSAGES')){
-           if (UserId === message.author.Id){
+            if (UserId === message.author.Id){
                message.channel.send('**You Cannot Warn Yourself**')
-           }
-            else{
+            } else{
                 try{
                     member = await message.guild.members.find(message.mentions.users.first())
                 }catch(err){
-                    var warnEmbed = new Discord.MessageEmbed()
+                    let warnEmbed = new MessageEmbed()
                     .setTitle("**Promotion/demotion**")
                     .setColor('#f5b318')
                     .addFields(
@@ -33,7 +33,7 @@ module.exports = {
                     )
                     .setTimestamp()
                     
-                }a
+                }
                 try{
                     User.send(warnEmbed)
                     message.channel.send(warnEmbed)
@@ -41,7 +41,8 @@ module.exports = {
                 catch(err){
                     return(message.reply('You must format the command <@mention> <reason>'))
                 }}
-            } 
-            else{
-                message.channel.send('only admin can warn members')
-            }}}
+        } else {
+            message.channel.send('only admin can warn members')
+        }
+    }
+}

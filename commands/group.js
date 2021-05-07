@@ -1,20 +1,25 @@
-const Discord = require("discord.js");
+const { Client, Message, MessageEmbed } = require('discord.js')
+
 module.exports = {
     name: 'group',
-    description: "group",
-    execute (message, args){
-            const taggedUser = message.mentions.users.first();
-            if (!message.mentions.users.size){
-                const embed1 = new Discord.MessageEmbed()
-                    .setTitle('NNA Roblox Group')
-                    .setURL('https://www.roblox.com/groups/8429016/Northern-Newspaper-Association#!/about')
-                    .setThumbnail(message.guild.iconURL())
-                    .setDescription('Please join the NNA Roblox group.')
-                    .setColor('#f5b318')
-                    .setFooter(message.author.username)
-                return message.channel.send(embed1);
-            }
-        }
+    description: "Gives the NNA Roblox grop link",
+    category: 'Server Setup',
+    aliases: [],
+    /**
+     * 
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {[]} args 
+     * @returns 
+     */
+    execute(client, message, args) {
+        const embed = new MessageEmbed()
+            .setTitle('NNA Roblox Group')
+            .setURL('https://www.roblox.com/groups/8429016/Northern-Newspaper-Association#!/about')
+            .setThumbnail(message.guild.iconURL())
+            .setDescription('Please join the NNA Roblox group!')
+            .setColor('#f5b318')
+            .setFooter(message.author.username)
+        return message.channel.send(embed);
+    }
 }
-
-
