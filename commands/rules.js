@@ -1,10 +1,19 @@
-const Discord = require('discord.js');
+const { Client, Message, MessageEmbed } = require('discord.js')
 
 module.exports = {
 	name: 'rules',
-	description: 'gives rules',
-	execute(message, args){
-			const exampleEmbed = new Discord.MessageEmbed()
+	description: 'Presents the NNA rules',
+	aliases: [],
+	category: 'Server Setup',
+    /**
+     * 
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {[]} args 
+     * @returns 
+     */
+	 execute(client, message, args) {
+			const exampleEmbed = new MessageEmbed()
 				.setColor('#f5b318')
 				.setTitle('NNA Rules')
 				.setDescription('These are the rules for the NNA, Abusing, exploiting or anything else will result in a punishment')

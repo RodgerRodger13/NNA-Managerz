@@ -9,7 +9,7 @@
   "author": "RodgerRodger13",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^12.5.1",
-    "yt-search": "^2.7.3"
+    "discord.js": "^12.5.3",
+    "ms": "^2.1.3"
   }
 }
