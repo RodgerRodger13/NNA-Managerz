@@ -40,21 +40,9 @@ module.exports = {
             "a": "Author",
             "sa": "Senior Author"
         }
-        if(args[0] && Object.keys(shorthandRoles).includes(args[0])) {
-            let role = message.guild.roles.cache.find(role => role.name === reactionRoles[args[0]]);
-            if(!target.roles.cache.has(role.id)) {
-                target.roles.add(role)
-                let msg = await message.channel.send(`**role *${reactionRoles[response]}* added to** ${target.toString()}`);
-                messageEmbed.delete({timeout: 5000})
-                msg.delete({timeout: 5000})
-            } else {
-                target.roles.remove(role)
-                let msg = await message.channel.send(`**role *${reactionRoles[response]}* removed from** ${target.toString()}`);
-                messageEmbed.delete({ timeout: 5000 })
-                msg.delete({timeout: 5000})
-            }
-            return
-        }
+  
+
+            
         let embed = new MessageEmbed()        
             .setColor('#f5b318')
             .setTitle('React to rank a Writer')
