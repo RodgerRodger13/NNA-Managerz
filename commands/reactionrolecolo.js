@@ -24,7 +24,7 @@ module.exports = {
             .setDescription('React to the message to get roled \n\n'
                 + Object.entries(roles).map((key) => key.join(" for ")).join("\n"));
         let msg = await message.channel.send(embed);
-        Object.keys(reactionRoles).forEach(async emoji => {
+        Object.keys(roles).forEach(async emoji => {
             try {
                 await msg.react(emoji)
             } catch (err) {}
